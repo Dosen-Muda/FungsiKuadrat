@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Virtual: Karakteristik Fungsi Kuadrat</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Kustomisasi Slider agar nyaman digunakan di desktop maupun layar sentuh */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        .slider-a::-webkit-slider-thumb { background: #4f46e5; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); }
+        .slider-b::-webkit-slider-thumb { background: #0d9488; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.2); }
+        .slider-c::-webkit-slider-thumb { background: #e11d48; box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.2); }
+
+        /* Animasi halus untuk perpindahan tab */
+        .tab-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    f(x)
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">Lab Fungsi Kuadrat</h1>
+                    <p class="text-xs text-slate-500">Eksplorasi Interaktif Pengaruh Nilai <span class="font-semibold text-indigo-600">a</span>, <span class="font-semibold text-teal-600">b</span>, dan <span class="font-semibold text-rose-600">c</span></p>
+                </div>
+            </div>
+
+            <!-- Navigasi Tab Utama -->
+            <nav class="flex bg-slate-100 p-1 rounded-xl w-full sm:w-auto justify-center">
+                <button onclick="switchTab('eksplorasi')" id="tab-btn-eksplorasi" class="tab-btn flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-600 shadow-sm">
+                    📈 Grafik & Eksplorasi
+                </button>
+                <button onclick="switchTab('materi')" id="tab-btn-materi" class="tab-btn flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all">
+                    📚 Konsep & Misi
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-btn-kuis" class="tab-btn flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all">
+                    🎯 Kuis Mandiri
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: GRAFIK & EKSPLORASI INTERAKTIF      -->
+        <!-- ========================================== -->
+        <section id="section-eksplorasi" class="tab-content space-y-6">
+            
+            <!-- Banner Persamaan Aktif -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-center md:text-left">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Persamaan Fungsi Saat Ini</span>
+                    <div id="equation-display" class="text-2xl sm:text-3xl font-mono font-bold text-slate-900 mt-1">
+                        f(x) = <span class="text-indigo-600">1</span>x² + <span class="text-teal-600">0</span>x + <span class="text-rose-600">0</span>
+                    </div>
+                </div>
+                
+                <!-- Tombol Preset Cepat -->
+                <div class="flex flex-wrap items-center justify-center md:justify-end gap-2">
+                    <span class="text-xs font-semibold text-slate-500 w-full text-center md:text-right mb-0.5">Contoh Cepat (Preset):</span>
+                    <button onclick="applyPreset(1, 0, 0)" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 border border-slate-200 transition">
+                        Standar (a=1)
+                    </button>
+                    <button onclick="applyPreset(-1, 2, 3)" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 border border-slate-200 transition">
+                        Terbuka ke Bawah
+                    </button>
+                    <button onclick="applyPreset(1, -2, -3)" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 border border-slate-200 transition">
+                        2 Akar Berbeda (D &gt; 0)
+                    </button>
+                    <button onclick="applyPreset(1, -4, 4)" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 border border-slate-200 transition">
+                        Menyinggung Sumbu X (D = 0)
+                    </button>
+                    <button onclick="applyPreset(1, 2, 4)" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 border border-slate-200 transition">
+                        Melayang (D &lt; 0)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid Utama: Kanvas Kiri & Kontrol/Analisis Kanan -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Kolom Kiri: Kanvas Grafik + Legenda + Kontrol Parameter -->
+                <div class="lg:col-span-7 space-y-6">
+                    <!-- Kartu Kanvas -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <h2 class="font-bold text-slate-800 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                                Bidang Koordinat Kartesius
+                            </h2>
+                            <div class="flex items-center gap-2">
+                                <button onclick="zoomCanvas(1.2)" title="Perbesar" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 transition">➕ Zoom In</button>
+                                <button onclick="zoomCanvas(0.8)" title="Perkecil" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 transition">➖ Zoom Out</button>
+                                <button onclick="resetView()" title="Reset Tampilan" class="px-2.5 py-1 text-xs font-bold bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-700 transition">↺ Reset</button>
+                            </div>
+                        </div>
+
+                        <!-- Container Canvas Responsif -->
+                        <div id="canvas-container" class="relative w-full aspect-square sm:aspect-[4/3] bg-slate-50 rounded-xl overflow-hidden border border-slate-200 cursor-grab active:cursor-grabbing">
+                            <canvas id="graphCanvas" class="w-full h-full block"></canvas>
+                            <!-- Tooltip Koordinat saat Hover -->
+                            <div id="cursor-coords" class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs font-mono text-slate-600 border border-slate-200 shadow-sm pointer-events-none">
+                                x: 0.0, y: 0.0
+                            </div>
+                        </div>
+
+                        <!-- Legenda Titik Penting -->
+                        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-600">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-indigo-600 inline-block"></span>
+                                <span>Kurva Parabola</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-amber-500 border-2 border-white shadow-sm inline-block"></span>
+                                <span>Titik Puncak (Vertex)</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 border-2 border-white shadow-sm inline-block"></span>
+                                <span>Titik Potong Sumbu Y (0, c)</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-sm inline-block"></span>
+                                <span>Akar / Titik Potong Sumbu X</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-4 border-t-2 border-dashed border-purple-500 inline-block"></span>
+                                <span>Sumbu Simetri</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kartu Kontrol Parameter (Sliders) -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-5">
+                        <div class="flex items-center justify-between">
+                            <h2 class="font-bold text-slate-800">🎛️ Atur Koefisien & Konstanta</h2>
+                            <span class="text-xs text-slate-400">Geser slider atau ketik angka</span>
+                        </div>
+
+                        <!-- Kontrol Nilai a -->
+                        <div class="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label for="input-a" class="text-sm font-bold text-indigo-900">
+                                    Koefisien <span class="font-mono text-base bg-indigo-600 text-white px-1.5 py-0.5 rounded">a</span> (Koefisien x²)
+                                </label>
+                                <input type="number" id="input-a" value="1" min="-5" max="5" step="0.1" class="w-20 px-2.5 py-1 text-right font-mono font-bold text-indigo-700 bg-white border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <input type="range" id="slider-a" value="1" min="-5" max="5" step="0.1" class="w-full slider-a">
+                            <div class="flex justify-between text-[11px] text-indigo-600/80 font-medium">
+                                <span>-5 (Terbuka ke Bawah)</span>
+                                <span>0 (Linear)</span>
+                                <span>+5 (Terbuka ke Atas)</span>
+                            </div>
+                        </div>
+
+                        <!-- Kontrol Nilai b -->
+                        <div class="p-3.5 rounded-xl bg-teal-50/60 border border-teal-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label for="input-b" class="text-sm font-bold text-teal-900">
+                                    Koefisien <span class="font-mono text-base bg-teal-600 text-white px-1.5 py-0.5 rounded">b</span> (Koefisien x)
+                                </label>
+                                <input type="number" id="input-b" value="0" min="-10" max="10" step="0.5" class="w-20 px-2.5 py-1 text-right font-mono font-bold text-teal-700 bg-white border border-teal-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            </div>
+                            <input type="range" id="slider-b" value="0" min="-10" max="10" step="0.5" class="w-full slider-b">
+                            <div class="flex justify-between text-[11px] text-teal-600/80 font-medium">
+                                <span>-10</span>
+                                <span>0 (Puncak di Sumbu Y)</span>
+                                <span>+10</span>
+                            </div>
+                        </div>
+
+                        <!-- Kontrol Nilai c -->
+                        <div class="p-3.5 rounded-xl bg-rose-50/60 border border-rose-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label for="input-c" class="text-sm font-bold text-rose-900">
+                                    Konstanta <span class="font-mono text-base bg-rose-600 text-white px-1.5 py-0.5 rounded">c</span> (Titik Potong Sumbu Y)
+                                </label>
+                                <input type="number" id="input-c" value="0" min="-10" max="10" step="0.5" class="w-20 px-2.5 py-1 text-right font-mono font-bold text-rose-700 bg-white border border-rose-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500">
+                            </div>
+                            <input type="range" id="slider-c" value="0" min="-10" max="10" step="0.5" class="w-full slider-c">
+                            <div class="flex justify-between text-[11px] text-rose-600/80 font-medium">
+                                <span>-10 (Geser ke Bawah)</span>
+                                <span>0 (Melalui Pusat)</span>
+                                <span>+10 (Geser ke Atas)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Panel Analisis Real-Time -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="font-bold text-slate-900 text-lg">🔍 Analisis Karakteristik Real-Time</h2>
+                            <p class="text-xs text-slate-500">Otomatis diperbarui setiap kali nilai a, b, atau c berubah.</p>
+                        </div>
+
+                        <!-- 1. Analisis Nilai a -->
+                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">1. Pengaruh Nilai a</span>
+                                <span id="badge-a" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">a &gt; 0</span>
+                            </div>
+                            <p id="desc-a" class="text-sm text-slate-700 leading-relaxed">
+                                Karena <strong>a &gt; 0</strong>, parabola <strong>terbuka ke atas</strong> dan memiliki titik balik <strong>minimum</strong>.
+                            </p>
+                        </div>
+
+                        <!-- 2. Analisis Nilai b & Sumbu Simetri -->
+                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-teal-600">2. Pengaruh Nilai b & Sumbu Simetri</span>
+                                <span id="badge-sym" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-100 text-teal-700">x = 0</span>
+                            </div>
+                            <p id="desc-b" class="text-sm text-slate-700 leading-relaxed">
+                                Karena <strong>b = 0</strong>, sumbu simetri berimpit dengan sumbu Y (x = 0).
+                            </p>
+                        </div>
+
+                        <!-- 3. Analisis Nilai c -->
+                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-rose-600">3. Pengaruh Nilai c</span>
+                                <span id="badge-c" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-700">(0, 0)</span>
+                            </div>
+                            <p id="desc-c" class="text-sm text-slate-700 leading-relaxed">
+                                Grafik memotong sumbu Y di titik <strong>(0, 0)</strong>.
+                            </p>
+                        </div>
+
+                        <!-- 4. Titik Puncak / Ekstrem -->
+                        <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-700">4. Titik Puncak (Vertex)</span>
+                                <span id="badge-vertex" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">(0, 0)</span>
+                            </div>
+                            <p id="desc-vertex" class="text-sm text-slate-700 leading-relaxed">
+                                Koordinat titik puncak berada di <strong>(0, 0)</strong> dengan nilai <strong>minimum y = 0</strong>.
+                            </p>
+                        </div>
+
+                        <!-- 5. Diskriminan & Akar-akar -->
+                        <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">5. Diskriminan (D = b² - 4ac)</span>
+                                <span id="badge-disc" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">D = 0</span>
+                            </div>
+                            <p id="desc-disc" class="text-sm text-slate-700 leading-relaxed">
+                                Karena <strong>D = 0</strong>, parabola menyinggung sumbu X tepat di satu titik: <strong>(0, 0)</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: PANDUAN KONSEP & MISI EKSPLORASI    -->
+        <!-- ========================================== -->
+        <section id="section-materi" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-extrabold text-slate-900 mb-2">📚 Ringkasan Materi: Karakteristik Fungsi Kuadrat</h2>
+                <p class="text-sm text-slate-600 mb-6">Bentuk umum fungsi kuadrat adalah <code class="bg-slate-100 px-2 py-0.5 rounded font-mono font-bold text-indigo-700">f(x) = ax² + bx + c</code> dengan syarat <code class="font-mono font-bold">a ≠ 0</code>. Setiap parameter memiliki peran unik dalam membentuk kurva parabola:</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Kartu Konsep A -->
+                    <div class="rounded-xl p-5 bg-indigo-50/70 border border-indigo-100 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white font-mono font-bold text-xl flex items-center justify-center">a</div>
+                        <h3 class="font-bold text-indigo-950 text-base">Peran Koefisien a</h3>
+                        <ul class="text-sm text-slate-700 space-y-2 list-disc pl-4">
+                            <li><strong>a &gt; 0 (Positif):</strong> Parabola terbuka ke <strong>atas</strong> (seperti mangkuk / senyum 😊). Puncaknya adalah titik minimum.</li>
+                            <li><strong>a &lt; 0 (Negatif):</strong> Parabola terbuka ke <strong>bawah</strong> (seperti bukit / cemberut ☹️). Puncaknya adalah titik maksimum.</li>
+                            <li><strong>Kelengkungan:</strong> Semakin besar nilai mutlak <code>|a|</code>, kurva semakin <strong>sempit/runcing</strong>. Semakin kecil <code>|a|</code> (mendekati 0), kurva semakin <strong>lebar/landai</strong>.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Kartu Konsep B -->
+                    <div class="rounded-xl p-5 bg-teal-50/70 border border-teal-100 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-teal-600 text-white font-mono font-bold text-xl flex items-center justify-center">b</div>
+                        <h3 class="font-bold text-teal-950 text-base">Peran Koefisien b</h3>
+                        <ul class="text-sm text-slate-700 space-y-2 list-disc pl-4">
+                            <li>Menentukan posisi <strong>sumbu simetri</strong> (<code class="font-mono">x = -b / 2a</code>) dan letak titik puncak terhadap sumbu Y.</li>
+                            <li><strong>a dan b bertanda sama</strong> (keduanya + atau keduanya -): Titik puncak berada di <strong>sebelah kiri</strong> sumbu Y.</li>
+                            <li><strong>a dan b berlawanan tanda</strong>: Titik puncak berada di <strong>sebelah kanan</strong> sumbu Y.</li>
+                            <li><strong>b = 0</strong>: Titik puncak berada <strong>tepat pada sumbu Y</strong>.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Kartu Konsep C -->
+                    <div class="rounded-xl p-5 bg-rose-50/70 border border-rose-100 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-rose-600 text-white font-mono font-bold text-xl flex items-center justify-center">c</div>
+                        <h3 class="font-bold text-rose-950 text-base">Peran Konstanta c</h3>
+                        <ul class="text-sm text-slate-700 space-y-2 list-disc pl-4">
+                            <li>Menunjukkan titik potong parabola dengan <strong>sumbu Y</strong>, yaitu pada koordinat <strong>(0, c)</strong>.</li>
+                            <li><strong>c &gt; 0:</strong> Memotong sumbu Y di atas titik asal (positif).</li>
+                            <li><strong>c = 0:</strong> Kurva melewati titik pusat koordinat (0, 0).</li>
+                            <li><strong>c &lt; 0:</strong> Memotong sumbu Y di bawah titik asal (negatif).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Penjelasan Diskriminan -->
+                <div class="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200">
+                    <h3 class="font-bold text-slate-900 mb-2">📐 Diskriminan (<span class="font-mono text-emerald-700">D = b² - 4ac</span>) & Hubungannya dengan Sumbu X</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mt-3">
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200">
+                            <span class="font-mono font-bold text-emerald-600 block mb-1">D &gt; 0</span>
+                            Grafik memotong sumbu X di <strong>2 titik berbeda</strong> (memiliki 2 akar real berbeda).
+                        </div>
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200">
+                            <span class="font-mono font-bold text-amber-600 block mb-1">D = 0</span>
+                            Grafik <strong>menyinggung sumbu X</strong> di 1 titik (memiliki 2 akar real kembar).
+                        </div>
+                        <div class="bg-white p-3.5 rounded-lg border border-slate-200">
+                            <span class="font-mono font-bold text-rose-600 block mb-1">D &lt; 0</span>
+                            Grafik <strong>tidak memotong sumbu X</strong> (melayang di atas atau di bawah sumbu X).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Misi Eksplorasi Mandiri -->
+            <div class="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-6 text-white shadow-md">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="text-xl font-extrabold">🚀 Misi Eksplorasi Mandiri</h2>
+                        <p class="text-indigo-100 text-sm">Coba atur slider di tab Grafik untuk menyelesaikan tantangan berikut! Misi akan otomatis tercentang jika berhasil.</p>
+                    </div>
+                    <span id="mission-progress" class="bg-white/20 px-3 py-1.5 rounded-xl text-sm font-bold self-start">0 / 4 Selesai</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="missions-list">
+                    <!-- Misi dirender lewat JS -->
+                </div>
+
+                <div class="mt-5 text-right">
+                    <button onclick="switchTab('eksplorasi')" class="px-5 py-2.5 bg-white text-indigo-700 font-bold text-sm rounded-xl hover:bg-indigo-50 transition shadow-sm">
+                        Kembali ke Grafik untuk Mencoba →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: KUIS INTERAKTIF MANDIRI             -->
+        <!-- ========================================== -->
+        <section id="section-kuis" class="tab-content hidden max-w-3xl mx-auto">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900">🎯 Kuis Pemahaman Fungsi Kuadrat</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Uji pemahamanmu tentang pengaruh nilai a, b, c, dan diskriminan.</p>
+                    </div>
+                    <button onclick="resetQuiz()" class="px-3 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">
+                        ↺ Ulangi Kuis
+                    </button>
+                </div>
+
+                <!-- Container Soal Kuis -->
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Soal dirender oleh JavaScript -->
+                </div>
+
+                <!-- Hasil Skor Akhir -->
+                <div id="quiz-result" class="hidden mt-8 p-6 rounded-2xl bg-indigo-50 border border-indigo-100 text-center space-y-3">
+                    <div class="text-4xl" id="result-emoji">🎉</div>
+                    <h3 class="text-xl font-extrabold text-indigo-950" id="result-title">Luar Biasa!</h3>
+                    <p class="text-sm text-indigo-800" id="result-score-text">Kamu menjawab benar 5 dari 5 soal.</p>
+                    <button onclick="resetQuiz()" class="mt-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition shadow-sm">
+                        Coba Kuis Lagi
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Sederhana -->
+    <footer class="max-w-7xl mx-auto px-4 py-6 text-center text-xs text-slate-400">
+        Media Pembelajaran Matematika Interaktif • Materi Fungsi Kuadrat Kelas IX / X
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- LOGIKA JAVASCRIPT INTERAKTIF               -->
+    <!-- ========================================== -->
+    <script>
+        // --- 1. STATE APLIKASI ---
+        const state = {
+            a: 1,
+            b: 0,
+            c: 0,
+            scale: 32,       // Piksel per 1 satuan koordinat
+            offsetX: 0,      // Geser kamera X (piksel)
+            offsetY: 0,      // Geser kamera Y (piksel)
+            isDragging: false,
+            lastMouseX: 0,
+            lastMouseY: 0,
+            missionsCompleted: [false, false, false, false]
+        };
+
+        // --- 2. REFERENSI ELEMEN DOM ---
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const sliderA = document.getElementById('slider-a');
+        const sliderB = document.getElementById('slider-b');
+        const sliderC = document.getElementById('slider-c');
+        const inputA = document.getElementById('input-a');
+        const inputB = document.getElementById('input-b');
+        const inputC = document.getElementById('input-c');
+
+        // --- 3. FORMAT ANGKA & PERSAMAAN ---
+        function formatNum(num) {
+            // Menghindari -0 dan membulatkan maksimal 2 desimal
+            const clean = Math.abs(num) < 1e-9 ? 0 : Math.round(num * 100) / 100;
+            return clean.toString();
+        }
+
+        function updateEquationDisplay() {
+            const { a, b, c } = state;
+            const signB = b >= 0 ? '+' : '-';
+            const signC = c >= 0 ? '+' : '-';
+            const absB = formatNum(Math.abs(b));
+            const absC = formatNum(Math.abs(c));
+
+            document.getElementById('equation-display').innerHTML = `
+                f(x) = <span class="text-indigo-600">${formatNum(a)}</span>x² 
+                ${signB} <span class="text-teal-600">${absB}</span>x 
+                ${signC} <span class="text-rose-600">${absC}</span>
+            `;
+        }
+
+        // --- 4. ANALISIS REAL-TIME KARAKTERISTIK ---
+        function updateAnalysis() {
+            const { a, b, c } = state;
+            const badgeA = document.getElementById('badge-a');
+            const descA = document.getElementById('desc-a');
+            const badgeSym = document.getElementById('badge-sym');
+            const descB = document.getElementById('desc-b');
+            const badgeC = document.getElementById('badge-c');
+            const descC = document.getElementById('desc-c');
+            const badgeVertex = document.getElementById('badge-vertex');
+            const descVertex = document.getElementById('desc-vertex');
+            const badgeDisc = document.getElementById('badge-disc');
+            const descDisc = document.getElementById('desc-disc');
+
+            // Kasus Khusus: a == 0 (Fungsi Linear, bukan kuadrat)
+            if (Math.abs(a) < 1e-9) {
+                badgeA.textContent = 'a = 0 (Linear)';
+                badgeA.className = 'text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800';
+                descA.innerHTML = `Perhatian! Karena <strong>a = 0</strong>, suku x² hilang sehingga grafik berubah menjadi <strong>garis lurus (fungsi linear)</strong> f(x) = ${formatNum(b)}x + ${formatNum(c)}.`;
+
+                badgeSym.textContent = 'Tidak ada';
+                descB.innerHTML = `Fungsi linear tidak memiliki sumbu simetri seperti parabola. Nilai <strong>b = ${formatNum(b)}</strong> berperan sebagai gradien (kemiringan garis).`;
+
+                badgeC.textContent = `(0, ${formatNum(c)})`;
+                descC.innerHTML = `Garis memotong sumbu Y di titik <strong>(0, ${formatNum(c)})</strong>.`;
+
+                badgeVertex.textContent = 'Tidak ada';
+                descVertex.innerHTML = `Garis lurus tidak memiliki titik puncak (titik balik).`;
+
+                badgeDisc.textContent = 'Tidak berlaku';
+                if (Math.abs(b) > 1e-9) {
+                    const rootX = -c / b;
+                    descDisc.innerHTML = `Garis memotong sumbu X di satu titik: <strong>(${formatNum(rootX)}, 0)</strong>.`;
+                } else {
+                    descDisc.innerHTML = c === 0 ? `Garis berimpit dengan sumbu X.` : `Garis sejajar sumbu X dan tidak memotongnya.`;
+                }
+                return;
+            }
+
+            // 1. Analisis nilai a
+            let lebarText = '';
+            const absA = Math.abs(a);
+            if (absA > 1.5) lebarText = 'Kurva tampak <strong>lebih sempit/runcing</strong> karena |a| > 1.';
+            else if (absA < 0.7) lebarText = 'Kurva tampak <strong>lebih lebar/landai</strong> karena |a| < 1.';
+            else lebarText = 'Kurva memiliki kelengkungan standar.';
+
+            if (a > 0) {
+                badgeA.textContent = `a = ${formatNum(a)} (> 0)`;
+                badgeA.className = 'text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700';
+                descA.innerHTML = `Karena <strong>a &gt; 0</strong>, parabola <strong>terbuka ke atas</strong> dan memiliki titik balik <strong>minimum</strong>. ${lebarText}`;
+            } else {
+                badgeA.textContent = `a = ${formatNum(a)} (< 0)`;
+                badgeA.className = 'text-xs font-mono font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-700';
+                descA.innerHTML = `Karena <strong>a &lt; 0</strong>, parabola <strong>terbuka ke bawah</strong> dan memiliki titik balik <strong>maksimum</strong>. ${lebarText}`;
+            }
+
+            // 2. Analisis nilai b & sumbu simetri
+            const xp = -b / (2 * a);
+            badgeSym.textContent = `x = ${formatNum(xp)}`;
+            if (Math.abs(b) < 1e-9) {
+                descB.innerHTML = `Karena <strong>b = 0</strong>, sumbu simetri berada tepat pada sumbu Y (<strong>x = 0</strong>).`;
+            } else if ((a > 0 && b > 0) || (a < 0 && b < 0)) {
+                descB.innerHTML = `Karena <strong>a</strong> dan <strong>b</strong> bertanda sama, titik puncak bergeser ke <strong>sebelah kiri sumbu Y</strong> dengan sumbu simetri <strong>x = ${formatNum(xp)}</strong>.`;
+            } else {
+                descB.innerHTML = `Karena <strong>a</strong> dan <strong>b</strong> berlawanan tanda, titik puncak bergeser ke <strong>sebelah kanan sumbu Y</strong> dengan sumbu simetri <strong>x = ${formatNum(xp)}</strong>.`;
+            }
+
+            // 3. Analisis nilai c
+            badgeC.textContent = `(0, ${formatNum(c)})`;
+            let posC = c > 0 ? 'di atas titik asal' : (c < 0 ? 'di bawah titik asal' : 'tepat di titik pusat koordinat');
+            descC.innerHTML = `Konstanta <strong>c = ${formatNum(c)}</strong> membuat grafik memotong sumbu Y di titik <strong>(0, ${formatNum(c)})</strong> (${posC}).`;
+
+            // 4. Titik Puncak
+            const yp = a * xp * xp + b * xp + c;
+            const jenisEkstrem = a > 0 ? 'minimum' : 'maksimum';
+            badgeVertex.textContent = `(${formatNum(xp)}, ${formatNum(yp)})`;
+            descVertex.innerHTML = `Titik puncak berada di <strong>(${formatNum(xp)}, ${formatNum(yp)})</strong> dengan nilai <strong>${jenisEkstrem} y = ${formatNum(yp)}</strong>.`;
+
+            // 5. Diskriminan & Akar
+            const D = b * b - 4 * a * c;
+            badgeDisc.textContent = `D = ${formatNum(D)}`;
+            if (D > 1e-9) {
+                const x1 = (-b - Math.sqrt(D)) / (2 * a);
+                const x2 = (-b + Math.sqrt(D)) / (2 * a);
+                const leftRoot = Math.min(x1, x2);
+                const rightRoot = Math.max(x1, x2);
+                badgeDisc.className = 'text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+                descDisc.innerHTML = `Karena <strong>D &gt; 0</strong>, grafik memotong sumbu X di <strong>2 titik berbeda</strong>, yaitu <strong>(${formatNum(leftRoot)}, 0)</strong> dan <strong>(${formatNum(rightRoot)}, 0)</strong>.`;
+            } else if (Math.abs(D) <= 1e-9) {
+                badgeDisc.className = 'text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800';
+                descDisc.innerHTML = `Karena <strong>D = 0</strong>, grafik <strong>menyinggung sumbu X</strong> tepat di satu titik: <strong>(${formatNum(xp)}, 0)</strong>.`;
+            } else {
+                badgeDisc.className = 'text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800';
+                descDisc.innerHTML = `Karena <strong>D &lt; 0</strong>, grafik <strong>tidak memotong sumbu X</strong> (seluruh kurva berada ${a > 0 ? 'di atas' : 'di bawah'} sumbu X).`;
+            }
+        }
+
+        // --- 5. MENGGAMBAR GRAFIK PADA HTML5 CANVAS ---
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-container');
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            drawGraph();
+        }
+
+        function drawGraph() {
+            const container = document.getElementById('canvas-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const { a, b, c, scale, offsetX, offsetY } = state;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Titik pusat koordinat (0,0) dalam piksel
+            const originX = width / 2 + offsetX;
+            const originY = height / 2 + offsetY;
+
+            // Tentukan langkah grid adaptif berdasarkan tingkat zoom
+            let gridStep = 1;
+            if (scale < 18) gridStep = 2;
+            if (scale < 10) gridStep = 5;
+            if (scale > 65) gridStep = 0.5;
+
+            const stepPx = gridStep * scale;
+
+            // 1. Gambar Garis Grid Minor & Mayor
+            ctx.lineWidth = 1;
+            const startX = originX % stepPx;
+            const startY = originY % stepPx;
+
+            for (let x = startX; x < width; x += stepPx) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+
+            for (let y = startY; y < height; y += stepPx) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // 2. Gambar Sumbu X dan Sumbu Y Utama
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#64748b';
+
+            // Sumbu X
+            if (originY >= 0 && originY <= height) {
+                ctx.beginPath();
+                ctx.moveTo(0, originY);
+                ctx.lineTo(width, originY);
+                ctx.stroke();
+            }
+
+            // Sumbu Y
+            if (originX >= 0 && originX <= width) {
+                ctx.beginPath();
+                ctx.moveTo(originX, 0);
+                ctx.lineTo(originX, height);
+                ctx.stroke();
+            }
+
+            // 3. Gambar Angka Skala pada Sumbu
+            ctx.fillStyle = '#64748b';
+            ctx.font = '11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            const minMathX = Math.floor(-originX / scale / gridStep) * gridStep;
+            const maxMathX = Math.ceil((width - originX) / scale / gridStep) * gridStep;
+
+            for (let mx = minMathX; mx <= maxMathX; mx += gridStep) {
+                if (Math.abs(mx) < 1e-9) continue;
+                const px = originX + mx * scale;
+                const labelY = Math.min(Math.max(originY + 6, 6), height - 18);
+                ctx.fillText(formatNum(mx), px, labelY);
+            }
+
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            const minMathY = Math.floor((originY - height) / scale / gridStep) * gridStep;
+            const maxMathY = Math.ceil(originY / scale / gridStep) * gridStep;
+
+            for (let my = minMathY; my <= maxMathY; my += gridStep) {
+                if (Math.abs(my) < 1e-9) continue;
+                const py = originY - my * scale;
+                const labelX = Math.min(Math.max(originX - 8, 28), width - 6);
+                ctx.fillText(formatNum(my), labelX, py);
+            }
+
+            // Label '0' di titik asal
+            if (originX > 15 && originX < width - 10 && originY > 10 && originY < height - 15) {
+                ctx.fillText('0', originX - 6, originY + 12);
+            }
+
+            // 4. Gambar Sumbu Simetri (jika a != 0)
+            if (Math.abs(a) > 1e-9) {
+                const xp = -b / (2 * a);
+                const symPx = originX + xp * scale;
+                if (symPx >= 0 && symPx <= width) {
+                    ctx.save();
+                    ctx.setLineDash([6, 6]);
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = '#a855f7';
+                    ctx.beginPath();
+                    ctx.moveTo(symPx, 0);
+                    ctx.lineTo(symPx, height);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+
+            // 5. Gambar Kurva Fungsi f(x) = ax² + bx + c
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#4f46e5';
+
+            let firstPoint = true;
+            for (let px = 0; px <= width; px += 2) {
+                const mx = (px - originX) / scale;
+                const my = a * mx * mx + b * mx + c;
+                const py = originY - my * scale;
+
+                // Batasi penggambaran jauh di luar layar agar kanvas tetap optimal
+                if (py < -2000 || py > height + 2000) {
+                    firstPoint = true;
+                    continue;
+                }
+
+                if (firstPoint) {
+                    ctx.moveTo(px, py);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+
+            // 6. Gambar Titik-Titik Penting
+            // A. Titik Potong Sumbu Y: (0, c)
+            drawPoint(originX, originY - c * scale, '#e11d48', `(0, ${formatNum(c)})`, 'right');
+
+            if (Math.abs(a) > 1e-9) {
+                const xp = -b / (2 * a);
+                const yp = a * xp * xp + b * xp + c;
+                const D = b * b - 4 * a * c;
+
+                // B. Titik Potong Sumbu X (Akar-akar)
+                if (D > 1e-9) {
+                    const x1 = (-b - Math.sqrt(D)) / (2 * a);
+                    const x2 = (-b + Math.sqrt(D)) / (2 * a);
+                    drawPoint(originX + x1 * scale, originY, '#10b981', `(${formatNum(x1)}, 0)`, 'bottom');
+                    drawPoint(originX + x2 * scale, originY, '#10b981', `(${formatNum(x2)}, 0)`, 'bottom');
+                } else if (Math.abs(D) <= 1e-9) {
+                    drawPoint(originX + xp * scale, originY, '#10b981', `(${formatNum(xp)}, 0)`, 'bottom');
+                }
+
+                // C. Titik Puncak (Vertex)
+                const vPos = a > 0 ? 'bottom' : 'top';
+                drawPoint(originX + xp * scale, originY - yp * scale, '#f59e0b', `Puncak (${formatNum(xp)}, ${formatNum(yp)})`, vPos);
+            }
+        }
+
+        function drawPoint(px, py, color, label, labelPos = 'top') {
+            const container = document.getElementById('canvas-container');
+            if (px < -20 || px > container.clientWidth + 20 || py < -20 || py > container.clientHeight + 20) return;
+
+            // Lingkaran luar putih
+            ctx.beginPath();
+            ctx.arc(px, py, 6.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+
+            // Lingkaran isi warna
+            ctx.beginPath();
+            ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            // Label koordinat kecil dengan latar belakang semi-transparan
+            ctx.font = 'bold 11px "Inter", sans-serif';
+            const textMetrics = ctx.measureText(label);
+            const padX = 5;
+            const boxW = textMetrics.width + padX * 2;
+            const boxH = 18;
+
+            let tx = px - boxW / 2;
+            let ty = py - boxH - 8;
+            if (labelPos === 'bottom') ty = py + 8;
+            if (labelPos === 'right') { tx = px + 8; ty = py - boxH / 2; }
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+            ctx.beginPath();
+            ctx.roundRect(tx, ty, boxW, boxH, 4);
+            ctx.fill();
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.fillStyle = '#1e293b';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, tx + boxW / 2, ty + boxH / 2);
+        }
+
+        // --- 6. SINKRONISASI KONTROL & MISI EKSPLORASI ---
+        function updateAll(source) {
+            if (source === 'slider') {
+                state.a = parseFloat(sliderA.value);
+                state.b = parseFloat(sliderB.value);
+                state.c = parseFloat(sliderC.value);
+                inputA.value = state.a;
+                inputB.value = state.b;
+                inputC.value = state.c;
+            } else if (source === 'input') {
+                state.a = isNaN(parseFloat(inputA.value)) ? 0 : Math.max(-5, Math.min(5, parseFloat(inputA.value)));
+                state.b = isNaN(parseFloat(inputB.value)) ? 0 : Math.max(-10, Math.min(10, parseFloat(inputB.value)));
+                state.c = isNaN(parseFloat(inputC.value)) ? 0 : Math.max(-10, Math.min(10, parseFloat(inputC.value)));
+                sliderA.value = state.a;
+                sliderB.value = state.b;
+                sliderC.value = state.c;
+            }
+
+            updateEquationDisplay();
+            updateAnalysis();
+            drawGraph();
+            checkMissions();
+        }
+
+        function applyPreset(a, b, c) {
+            state.a = a;
+            state.b = b;
+            state.c = c;
+            sliderA.value = a;
+            sliderB.value = b;
+            sliderC.value = c;
+            inputA.value = a;
+            inputB.value = b;
+            inputC.value = c;
+            resetView();
+            updateAll();
+        }
+
+        // Zoom & Pan pada Kanvas
+        function zoomCanvas(factor) {
+            state.scale = Math.max(8, Math.min(120, state.scale * factor));
+            drawGraph();
+        }
+
+        function resetView() {
+            state.scale = 32;
+            state.offsetX = 0;
+            state.offsetY = 0;
+            drawGraph();
+        }
+
+        // Event listener interaksi mouse/touch untuk menggeser grafik (pan)
+        canvas.addEventListener('mousedown', (e) => {
+            state.isDragging = true;
+            state.lastMouseX = e.clientX;
+            state.lastMouseY = e.clientY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                const originX = rect.width / 2 + state.offsetX;
+                const originY = rect.height / 2 + state.offsetY;
+                const mx = (e.clientX - rect.left - originX) / state.scale;
+                const my = (originY - (e.clientY - rect.top)) / state.scale;
+                document.getElementById('cursor-coords').textContent = `x: ${mx.toFixed(1)}, y: ${my.toFixed(1)}`;
+            }
+
+            if (!state.isDragging) return;
+            state.offsetX += e.clientX - state.lastMouseX;
+            state.offsetY += e.clientY - state.lastMouseY;
+            state.lastMouseX = e.clientX;
+            state.lastMouseY = e.clientY;
+            drawGraph();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.isDragging = false;
+        });
+
+        // Support Touch untuk Geser Kanvas di HP/Tablet
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                state.isDragging = true;
+                state.lastMouseX = e.touches[0].clientX;
+                state.lastMouseY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!state.isDragging || e.touches.length !== 1) return;
+            state.offsetX += e.touches[0].clientX - state.lastMouseX;
+            state.offsetY += e.touches[0].clientY - state.lastMouseY;
+            state.lastMouseX = e.touches[0].clientX;
+            state.lastMouseY = e.touches[0].clientY;
+            drawGraph();
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', () => {
+            state.isDragging = false;
+        });
+
+        // --- 7. MISI EKSPLORASI MANDIRI ---
+        const missionsData = [
+            {
+                title: "Misi 1: Bukit di Kanan",
+                desc: "Buat parabola terbuka ke bawah (a < 0) dengan titik puncak berada di sebelah kanan sumbu Y.",
+                check: (a, b, c) => a < 0 && (-b / (2 * a)) > 0.1
+            },
+            {
+                title: "Misi 2: Menyinggung Sumbu X",
+                desc: "Atur nilai a, b, dan c (dengan a ≠ 0) sehingga grafik tepat menyinggung sumbu X di satu titik (D = 0).",
+                check: (a, b, c) => Math.abs(a) > 1e-9 && Math.abs(b * b - 4 * a * c) <= 1e-9
+            },
+            {
+                title: "Misi 3: Melayang di Atas Sumbu X",
+                desc: "Buat parabola terbuka ke atas yang tidak memotong sumbu X sama sekali (Definit Positif: a > 0 dan D < 0).",
+                check: (a, b, c) => a > 0 && (b * b - 4 * a * c) < -1e-9
+            },
+            {
+                title: "Misi 4: Memotong Sumbu Y di (0, -4)",
+                desc: "Atur kurva fungsi kuadrat (a ≠ 0) agar memotong sumbu Y tepat di titik (0, -4).",
+                check: (a, b, c) => Math.abs(a) > 1e-9 && Math.abs(c - (-4)) < 1e-9
+            }
+        ];
+
+        function checkMissions() {
+            const { a, b, c } = state;
+            missionsData.forEach((m, idx) => {
+                if (m.check(a, b, c)) {
+                    state.missionsCompleted[idx] = true;
+                }
+            });
+            renderMissions();
+        }
+
+        function renderMissions() {
+            const container = document.getElementById('missions-list');
+            const completedCount = state.missionsCompleted.filter(Boolean).length;
+            document.getElementById('mission-progress').textContent = `${completedCount} / ${missionsData.length} Selesai`;
+
+            container.innerHTML = missionsData.map((m, idx) => {
+                const done = state.missionsCompleted[idx];
+                return `
+                    <div class="p-4 rounded-xl border transition ${done ? 'bg-emerald-500/20 border-emerald-300' : 'bg-white/10 border-white/20'}">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-sm">${m.title}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full font-bold ${done ? 'bg-emerald-400 text-emerald-950' : 'bg-white/20 text-white'}">
+                                ${done ? '✓ Tercapai' : 'Belum'}
+                            </span>
+                        </div>
+                        <p class="text-xs text-indigo-100 leading-relaxed">${m.desc}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- 8. KUIS INTERAKTIF MANDIRI ---
+        const quizQuestions = [
+            {
+                q: "Jika suatu fungsi kuadrat f(x) = ax² + bx + c memiliki nilai a = -3, maka bentuk grafiknya adalah...",
+                options: [
+                    "Parabola terbuka ke atas dengan nilai minimum",
+                    "Parabola terbuka ke bawah dengan nilai maksimum",
+                    "Garis lurus yang menurun ke kanan",
+                    "Parabola yang selalu memotong sumbu X di dua titik"
+                ],
+                answer: 1,
+                explanation: "Karena nilai a = -3 (negatif, a < 0), kurva parabola akan terbuka ke bawah sehingga titik puncaknya merupakan titik balik maksimum."
+            },
+            {
+                q: "Diketahui fungsi kuadrat f(x) = 2x² - 8x + 5. Di manakah letak titik potong grafik tersebut terhadap sumbu Y?",
+                options: [
+                    "(0, 2)",
+                    "(0, -8)",
+                    "(0, 5)",
+                    "(5, 0)"
+                ],
+                answer: 2,
+                explanation: "Titik potong terhadap sumbu Y terjadi saat x = 0, yaitu di titik (0, c). Karena c = 5, maka titik potongnya adalah (0, 5)."
+            },
+            {
+                q: "Pada fungsi f(x) = x² + 6x + 2, posisi titik puncak parabola berada di...",
+                options: [
+                    "Sebelah kiri sumbu Y",
+                    "Sebelah kanan sumbu Y",
+                    "Tepat pada sumbu Y",
+                    "Tepat di titik pusat (0, 0)"
+                ],
+                answer: 0,
+                explanation: "Nilai a = 1 (positif) dan b = 6 (positif). Karena a dan b bertanda sama, sumbu simetri x = -b/(2a) = -6/2 = -3, sehingga titik puncak berada di sebelah kiri sumbu Y."
+            },
+            {
+                q: "Jika grafik fungsi kuadrat menyinggung sumbu X tepat di satu titik, maka pernyataan yang pasti benar adalah...",
+                options: [
+                    "Nilai a = 0",
+                    "Nilai c = 0",
+                    "Nilai Diskriminan D > 0",
+                    "Nilai Diskriminan D = 0"
+                ],
+                answer: 3,
+                explanation: "Grafik fungsi kuadrat yang menyinggung sumbu X di satu titik memiliki akar kembar, yang terjadi apabila nilai Diskriminannya D = b² - 4ac = 0."
+            },
+            {
+                q: "Manakah dari fungsi kuadrat berikut yang kurvanya paling lebar (landai)?",
+                options: [
+                    "f(x) = 4x² + 1",
+                    "f(x) = -3x² + 2",
+                    "f(x) = 0.2x² - 1",
+                    "f(x) = -2x² + 5"
+                ],
+                answer: 2,
+                explanation: "Kelengkungan parabola ditentukan oleh nilai mutlak |a|. Semakin kecil nilai |a| (mendekati 0), semakin lebar kurvanya. Di antara pilihan tersebut, |0.2| adalah yang terkecil."
+            }
+        ];
+
+        let userAnswers = new Array(quizQuestions.length).fill(null);
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = quizQuestions.map((item, qIdx) => {
+                const selected = userAnswers[qIdx];
+                const isAnswered = selected !== null;
+
+                const optionsHtml = item.options.map((opt, oIdx) => {
+                    let btnClass = "w-full text-left p-3.5 rounded-xl border text-sm font-medium transition flex items-center justify-between ";
+                    if (!isAnswered) {
+                        btnClass += "bg-slate-50 hover:bg-indigo-50 border-slate-200 hover:border-indigo-300 text-slate-700";
+                    } else {
+                        if (oIdx === item.answer) {
+                            btnClass += "bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold";
+                        } else if (oIdx === selected) {
+                            btnClass += "bg-rose-50 border-rose-500 text-rose-900";
+                        } else {
+                            btnClass += "bg-slate-50 border-slate-200 text-slate-400 opacity-70";
+                        }
+                    }
+
+                    let icon = "";
+                    if (isAnswered) {
+                        if (oIdx === item.answer) icon = `<span class="text-emerald-600 font-bold">✓ Benar</span>`;
+                        else if (oIdx === selected) icon = `<span class="text-rose-600 font-bold">✕ Salah</span>`;
+                    }
+
+                    return `
+                        <button onclick="selectAnswer(${qIdx}, ${oIdx})" ${isAnswered ? 'disabled' : ''} class="${btnClass}">
+                            <span>${String.fromCharCode(65 + oIdx)}. ${opt}</span>
+                            ${icon}
+                        </button>
+                    `;
+                }).join('');
+
+                const explanationHtml = isAnswered ? `
+                    <div class="mt-3 p-3.5 rounded-xl text-xs leading-relaxed ${selected === item.answer ? 'bg-emerald-50/80 text-emerald-900 border border-emerald-200' : 'bg-amber-50/80 text-amber-900 border border-amber-200'}">
+                        <strong>Pembahasan:</strong> ${item.explanation}
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-white space-y-3">
+                        <div class="flex items-start gap-2.5">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-indigo-100 text-indigo-700 font-bold text-xs mt-0.5">Soal ${qIdx + 1}</span>
+                            <h3 class="font-bold text-slate-800 text-sm sm:text-base leading-snug">${item.q}</h3>
+                        </div>
+                        <div class="space-y-2 pt-1">
+                            ${optionsHtml}
+                        </div>
+                        ${explanationHtml}
+                    </div>
+                `;
+            }).join('');
+
+            // Cek jika semua soal sudah dijawab
+            if (userAnswers.every(ans => ans !== null)) {
+                const score = userAnswers.reduce((acc, ans, idx) => acc + (ans === quizQuestions[idx].answer ? 1 : 0), 0);
+                const resultBox = document.getElementById('quiz-result');
+                resultBox.classList.remove('hidden');
+                document.getElementById('result-score-text').textContent = `Kamu berhasil menjawab benar ${score} dari ${quizQuestions.length} soal (Nilai: ${score * 20}).`;
+                if (score === 5) {
+                    document.getElementById('result-emoji').textContent = '🏆';
+                    document.getElementById('result-title').textContent = 'Sempurna! Kamu Menguasai Materi!';
+                } else if (score >= 3) {
+                    document.getElementById('result-emoji').textContent = '👏';
+                    document.getElementById('result-title').textContent = 'Bagus Sekali! Terus Berlatih!';
+                } else {
+                    document.getElementById('result-emoji').textContent = '💪';
+                    document.getElementById('result-title').textContent = 'Tetap Semangat! Coba Eksplorasi Grafiknya Lagi.';
+                }
+            }
+        }
+
+        function selectAnswer(qIdx, oIdx) {
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            renderQuiz();
+        }
+
+        function resetQuiz() {
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // --- 9. NAVIGASI TAB ---
+        function switchTab(tabName) {
+            ['eksplorasi', 'materi', 'kuis'].forEach(t => {
+                const section = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabName) {
+                    section.classList.remove('hidden');
+                    btn.className = 'tab-btn flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-600 shadow-sm';
+                } else {
+                    section.classList.add('hidden');
+                    btn.className = 'tab-btn flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all';
+                }
+            });
+
+            if (tabName === 'eksplorasi') {
+                setTimeout(resizeCanvas, 20);
+            }
+        }
+
+        // --- 10. INISIALISASI EVENT LISTENER ---
+        sliderA.addEventListener('input', () => updateAll('slider'));
+        sliderB.addEventListener('input', () => updateAll('slider'));
+        sliderC.addEventListener('input', () => updateAll('slider'));
+
+        inputA.addEventListener('change', () => updateAll('input'));
+        inputB.addEventListener('change', () => updateAll('input'));
+        inputC.addEventListener('change', () => updateAll('input'));
+
+        window.addEventListener('resize', resizeCanvas);
+
+        window.onload = function() {
+            renderMissions();
+            renderQuiz();
+            updateAll();
+            resizeCanvas();
+        };
+    </script>
+</body>
+</html>
